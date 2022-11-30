@@ -1,4 +1,4 @@
-package com.access_security.entity.authorization;
+package com.access_security.model.authorization;
 
 import lombok.Data;
 

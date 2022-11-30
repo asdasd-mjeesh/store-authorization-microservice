@@ -1,4 +1,4 @@
-package com.access_security.entity.order;
+package com.access_security.model.order;
 
 public enum Status {
     SUCCESSFULLY,

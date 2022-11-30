@@ -1,17 +1,16 @@
 package com.access_security.security;
 
-import com.access_security.entity.account.Account;
-import com.access_security.exception.EntityNotFoundException;
-import com.access_security.service.AccountService;
+import com.access_security.model.account.Account;
+import com.access_security.service.account.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@Service("userDetailsServiceImpl")
+@Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-
     private final AccountService accountService;
 
     @Autowired
@@ -20,10 +19,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Account account = accountService.getByEmail(email).orElseThrow(
-                ()-> new EntityNotFoundException(Account.class, "email=" + email)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Account account = accountService.getByEmail(username).orElseThrow(
+                () -> new RuntimeException(String.format("user with email=%s is not presented", username))
         );
-        return UserDetailsMapper.fromAccount(account);
+        System.out.println(account);
+        return mapUser(account);
+    }
+
+    private User mapUser(Account account) {
+        return new User(
+                account.getEmail(),
+                account.getPassword(),
+                account.getRole().getAuthorities()
+        );
     }
 }

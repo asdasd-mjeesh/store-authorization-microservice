@@ -1,4 +1,4 @@
-package com.access_security.entity.account;
+package com.access_security.model.account;
 
 public enum Permission {
 

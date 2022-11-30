@@ -1,4 +1,4 @@
-package com.access_security.entity.item;
+package com.access_security.model.item;
 
 public enum Type {
     SNEAKERS,

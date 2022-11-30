@@ -1,20 +1,18 @@
-package com.access_security.entity.order;
+package com.access_security.model.order;
 
-import com.access_security.entity.BaseEntity;
-import com.access_security.entity.account.Account;
+import com.access_security.model.account.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order extends BaseEntity {
+public class Order {
+    private Long id;
     private Account account;
     private Status status;
     private LocalDate date;

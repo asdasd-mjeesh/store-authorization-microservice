@@ -1,18 +1,17 @@
-package com.access_security.service;
+package com.access_security.service.account;
 
-import com.access_security.entity.account.Account;
-import org.apache.catalina.User;
+import com.access_security.model.account.Account;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface AccountService {
 
-    User create(Account account);
+    Account create(Account account);
 
     boolean update(Account account);
 
-    Optional<User> getById(Long id);
+    Optional<Account> getById(Long id);
 
     Optional<Account> getByEmail(String email);
 

@@ -1,11 +1,9 @@
-package com.access_security.entity.cart;
+package com.access_security.model.cart;
 
-import com.access_security.entity.BaseEntity;
-import com.access_security.entity.account.Account;
-import com.access_security.entity.order.OrderItem;
-import com.access_security.entity.order.Status;
+import com.access_security.model.account.Account;
+import com.access_security.model.order.OrderItem;
+import com.access_security.model.order.Status;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -13,9 +11,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class Cart extends BaseEntity {
+public class Cart {
+    private Long id;
     private Account account;
     private Status status;
     private LocalDate date;

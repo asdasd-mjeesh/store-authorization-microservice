@@ -1,18 +1,16 @@
-package com.access_security.entity.item;
+package com.access_security.model.item;
 
-import com.access_security.entity.BaseEntity;
-import com.access_security.entity.producer.Producer;
+import com.access_security.model.producer.Producer;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class Item extends BaseEntity {
+public class Item {
+    private Long id;
     private String title;
     private BigDecimal cost;
     private Type type;
