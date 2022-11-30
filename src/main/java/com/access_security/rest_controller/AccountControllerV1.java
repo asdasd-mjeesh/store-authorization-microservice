@@ -1,6 +1,6 @@
 package com.access_security.rest_controller;
 
-import com.access_security.model.Account;
+import com.access_security.model.account.Account;
 import com.access_security.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
