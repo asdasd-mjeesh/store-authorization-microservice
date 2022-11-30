@@ -1,12 +1,8 @@
-package com.access_security.model;
+package com.access_security.model.account;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
 
 @Data
 @NoArgsConstructor
@@ -14,7 +10,8 @@ import java.util.Collection;
 public class Account {
     private Long id;
     private String name;
-    private String username;
+    private String email;
+    private String contact;
     private String password;
-    private Collection<Role> roles = new ArrayList<>();
+    private Role role;
 }
