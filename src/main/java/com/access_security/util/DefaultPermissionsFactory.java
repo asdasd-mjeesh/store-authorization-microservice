@@ -1,6 +1,6 @@
 package com.access_security.util;
 
-import com.access_security.model.account.Permission;
+import com.access_security.model.deprecated__.Permission;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
