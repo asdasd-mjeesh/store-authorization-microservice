@@ -1,13 +1,14 @@
 package com.access_security.service;
 
-import com.access_security.model.account.Account;
+import com.access_security.model.request.account.AccountRequest;
+import com.access_security.model.response.account.AccountResponse;
 
 import java.util.Optional;
 
 public interface AccountService {
-    Optional<Account> create(Account account);
+    Optional<AccountResponse> create(AccountRequest account);
 
-    Optional<Account> getById(Long id);
+    Optional<AccountResponse> getById(Long id);
 
-    Optional<Account> getByEmail(String email);
+    Optional<AccountResponse> getByEmail(String email);
 }

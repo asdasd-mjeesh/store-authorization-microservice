@@ -1,6 +1,6 @@
 package com.access_security.security;
 
-import com.access_security.model.account.Account;
+import com.access_security.model.response.account.AccountResponse;
 import com.access_security.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,12 +25,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Account> maybeAccount = accountService.getByEmail(username);
+        Optional<AccountResponse> maybeAccount = accountService.getByEmail(username);
         if(maybeAccount.isEmpty()) {
             log.error("User not found in the database");
             throw new UsernameNotFoundException("User not found in the database");
         } else {
-            Account account = maybeAccount.get();
+            AccountResponse account = maybeAccount.get();
             log.info("User found in the database: {}", username);
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
             account.getRole().getPermissions().forEach(permission -> {

@@ -1,7 +1,6 @@
-package com.access_security.model.account;
+package com.access_security.model.common;
 
-public enum Permission {
-
+public enum PermissionEnum {
     ACCOUNT_SAVE("account:save"),
     ACCOUNT_READ("account:read"),
     ACCOUNT_DELETE("account:delete"),
@@ -24,7 +23,7 @@ public enum Permission {
 
     private final String permissionName;
 
-    Permission(String permissionName) {
+    PermissionEnum(String permissionName) {
         this.permissionName = permissionName;
     }
 

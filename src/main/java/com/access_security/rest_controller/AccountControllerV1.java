@@ -1,6 +1,6 @@
 package com.access_security.rest_controller;
 
-import com.access_security.model.account.Account;
+import com.access_security.model.request.account.AccountRequest;
 import com.access_security.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +16,11 @@ public class AccountControllerV1 {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<?> createAccount(@RequestBody Account account) {
+    public ResponseEntity<?> createAccount(@RequestBody AccountRequest account) {
         var savedAccount = accountService.create(account);
         if (savedAccount.isPresent()) {
             return new ResponseEntity<>(savedAccount.get(), HttpStatus.OK);
         }
         return new ResponseEntity<>("creation error", HttpStatus.CONFLICT);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Account> findById(@PathVariable("id") Long id) {
-        var account = accountService.getById(id).orElse(new Account());
-        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 }
