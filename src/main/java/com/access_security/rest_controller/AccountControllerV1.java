@@ -1,6 +1,6 @@
 package com.access_security.rest_controller;
 
-import com.access_security.model.response.account.AccountResponse;
+import com.access_security.model.request.account.AccountRequest;
 import com.access_security.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ public class AccountControllerV1 {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<?> createAccount(@RequestBody AccountResponse account) {
+    public ResponseEntity<?> createAccount(@RequestBody AccountRequest account) {
         var savedAccount = accountService.create(account);
         if (savedAccount.isPresent()) {
             return new ResponseEntity<>(savedAccount.get(), HttpStatus.OK);

@@ -1,7 +1,9 @@
 package com.access_security.service;
 
+import com.access_security.model.request.account.AccountRequest;
 import com.access_security.model.response.account.AccountResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
@@ -21,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Slf4j
 public class AccountCommunicationService implements AccountService {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private OkHttpClient okHttpClient;
     private final Long responseTimeAwait = 10L;
@@ -39,20 +41,21 @@ public class AccountCommunicationService implements AccountService {
     }
     
     @Override
-    public Optional<AccountResponse> create(AccountResponse account) {
+    public Optional<AccountResponse> create(AccountRequest account) {
         try {
-            var userJsonString = OBJECT_MAPPER.writeValueAsString(account);
-            var body = RequestBody.create(userJsonString, JSON);
+            var accountJsonString = OBJECT_MAPPER.writeValueAsString(account);
+            var body = RequestBody.create(accountJsonString, JSON);
             var request = new Request.Builder()
-                    .url(accountApiUrl)
+                    .url(accountApiUrl + "/")
                     .post(body)
                     .build();
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
             if (response.code() == HttpStatus.CREATED.value()) {
-                account = OBJECT_MAPPER.readValue(Objects.requireNonNull(response.body()).string(), AccountResponse.class);
-                return Optional.ofNullable(account);
+                AccountResponse accountResponse =
+                        OBJECT_MAPPER.readValue(Objects.requireNonNull(response.body()).string(), AccountResponse.class);
+                return Optional.ofNullable(accountResponse);
             }
             return Optional.empty();
         } catch (Exception e) {
