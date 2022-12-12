@@ -1,4 +1,4 @@
-package com.access_security.model.response.producer;
+package com.access_security.model.request.producer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmailResponse {
+public class EmailRequest {
     private Long id;
     private String address;
 }

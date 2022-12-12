@@ -22,8 +22,8 @@ public class AccountHttpCommunicationService implements AccountService {
     public final MediaType jsonMediaType;
     public final ObjectMapper objectMapper;
 
-    @Value("${http.communication.account.api.url}")
-    private String accountApiUrl;
+    @Value("${http.communication.account.api.url.root}")
+    private String accountsRootApiUrl;
 
     public AccountHttpCommunicationService(OkHttpClient okHttpClient, MediaType jsonMediaType, ObjectMapper objectMapper) {
         this.okHttpClient = okHttpClient;
@@ -34,7 +34,7 @@ public class AccountHttpCommunicationService implements AccountService {
     @Override
     public boolean confirm(Long accountId) {
         try {
-            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountApiUrl + "/confirm")).newBuilder();
+            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountsRootApiUrl + "/confirm")).newBuilder();
             urlBuilder.addQueryParameter("accountId", String.valueOf(accountId));
             String url = urlBuilder.build().toString();
 
@@ -55,7 +55,7 @@ public class AccountHttpCommunicationService implements AccountService {
     @Override
     public Optional<AccountResponse> addPermissions(Long accountId, List<PermissionEnum> permissions) {
         try {
-            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountApiUrl + "/addPermissions")).newBuilder();
+            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountsRootApiUrl + "/addPermissions")).newBuilder();
             urlBuilder.addQueryParameter("accountId", String.valueOf(accountId));
             String url = urlBuilder.build().toString();
 
@@ -77,7 +77,7 @@ public class AccountHttpCommunicationService implements AccountService {
     @Override
     public Optional<AccountResponse> deletePermissions(Long accountId, List<PermissionEnum> permissions) {
         try {
-            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountApiUrl + "/deletePermissions")).newBuilder();
+            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountsRootApiUrl + "/deletePermissions")).newBuilder();
             urlBuilder.addQueryParameter("accountId", String.valueOf(accountId));
             String url = urlBuilder.build().toString();
 
@@ -99,7 +99,7 @@ public class AccountHttpCommunicationService implements AccountService {
     @Override
     public Optional<AccountResponse> changeRole(Long accountId, RoleName role) {
         try {
-            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountApiUrl + "/changeRole")).newBuilder();
+            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountsRootApiUrl + "/changeRole")).newBuilder();
             urlBuilder.addQueryParameter("accountId", String.valueOf(accountId));
             urlBuilder.addQueryParameter("roleName", role.name());
             String url = urlBuilder.build().toString();
@@ -125,7 +125,7 @@ public class AccountHttpCommunicationService implements AccountService {
             var body = RequestBody.create(accountJsonString, jsonMediaType);
             var request = new Request.Builder()
                     .post(body)
-                    .url(accountApiUrl + "/")
+                    .url(accountsRootApiUrl + "/")
                     .build();
             var call = okHttpClient.newCall(request);
             var response = call.execute();
@@ -141,7 +141,7 @@ public class AccountHttpCommunicationService implements AccountService {
         try {
             var request = new Request.Builder()
                     .get()
-                    .url(accountApiUrl + "/" + id)
+                    .url(accountsRootApiUrl + "/" + id)
                     .build();
             var call = okHttpClient.newCall(request);
             var response = call.execute();
@@ -164,7 +164,7 @@ public class AccountHttpCommunicationService implements AccountService {
             var body = RequestBody.create(filterJson, jsonMediaType);
             var request = new Request.Builder()
                     .put(body)
-                    .url(accountApiUrl + "/filter")
+                    .url(accountsRootApiUrl + "/filter")
                     .build();
             var call = okHttpClient.newCall(request);
             var response = call.execute();
@@ -181,7 +181,7 @@ public class AccountHttpCommunicationService implements AccountService {
     @Override
     public Optional<AccountResponse> getByEmail(String email) {
         try {
-            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountApiUrl + "/")).newBuilder();
+            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountsRootApiUrl + "/")).newBuilder();
             urlBuilder.addQueryParameter("email", email);
             String url = urlBuilder.build().toString();
 
@@ -206,7 +206,7 @@ public class AccountHttpCommunicationService implements AccountService {
 
             var request = new Request.Builder()
                     .patch(body)
-                    .url(accountApiUrl + "/")
+                    .url(accountsRootApiUrl + "/")
                     .build();
             var call = okHttpClient.newCall(request);
             var response = call.execute();
@@ -222,7 +222,7 @@ public class AccountHttpCommunicationService implements AccountService {
         try {
             var request = new Request.Builder()
                     .delete()
-                    .url(accountApiUrl + "/" + id)
+                    .url(accountsRootApiUrl + "/" + id)
                     .build();
             var call = okHttpClient.newCall(request);
             var response = call.execute();

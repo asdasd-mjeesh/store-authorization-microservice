@@ -1,4 +1,4 @@
-package com.access_security.model.response.producer;
+package com.access_security.model.request.producer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +11,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProducerResponse {
+public class ProducerRequest {
     private Long id;
     private String name;
-    private List<EmailResponse> emails;
-    private List<ContactResponse> contacts;
+    private List<ContactRequest> contacts;
+    private List<EmailRequest> emails;
 }

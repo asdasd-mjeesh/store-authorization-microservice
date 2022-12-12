@@ -95,9 +95,9 @@ public class AccountControllerV1 {
 
     @PatchMapping("/")
     public ResponseEntity<?> update(@RequestBody AccountRequest account) {
-        var accountResponse = accountService.update(account);
-        if (accountResponse.isPresent()) {
-            return ResponseEntity.ok(accountResponse.get());
+        var updatedAccount = accountService.update(account);
+        if (updatedAccount.isPresent()) {
+            return ResponseEntity.ok(updatedAccount.get());
         }
         return new ResponseEntity<>("Updating failed", HttpStatus.CONFLICT);
     }
