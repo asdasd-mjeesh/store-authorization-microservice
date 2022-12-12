@@ -18,15 +18,16 @@ import java.util.*;
 @Service
 @Slf4j
 public class AccountHttpCommunicationService implements AccountService {
-    public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     public final OkHttpClient okHttpClient;
+    public final MediaType JSON;
     public final ObjectMapper objectMapper;
 
     @Value("${http.communication.account.api.url}")
     private String accountApiUrl;
 
-    public AccountHttpCommunicationService(OkHttpClient okHttpClient, ObjectMapper objectMapper) {
+    public AccountHttpCommunicationService(OkHttpClient okHttpClient, MediaType json, ObjectMapper objectMapper) {
         this.okHttpClient = okHttpClient;
+        this.JSON = json;
         this.objectMapper = objectMapper;
     }
 
@@ -49,16 +50,6 @@ public class AccountHttpCommunicationService implements AccountService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Optional<AccountResponse> getAccountFromHttpResponse(Response response, HttpStatus expectedResponseCode)
-            throws IOException {
-        if (response.code() == expectedResponseCode.value()) {
-            AccountResponse accountResponse =
-                    objectMapper.readValue(Objects.requireNonNull(response.body()).string(), AccountResponse.class);
-            return Optional.ofNullable(accountResponse);
-        }
-        return Optional.empty();
     }
 
     @Override
@@ -189,6 +180,66 @@ public class AccountHttpCommunicationService implements AccountService {
 
     @Override
     public Optional<AccountResponse> getByEmail(String email) {
+        try {
+            var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountApiUrl + "/")).newBuilder();
+            urlBuilder.addQueryParameter("email", email);
+            String url = urlBuilder.build().toString();
+
+            var request = new Request.Builder()
+                    .get()
+                    .url(url)
+                    .build();
+            var call = okHttpClient.newCall(request);
+            var response = call.execute();
+
+            return this.getAccountFromHttpResponse(response, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<AccountResponse> update(AccountRequest account) {
+        try {
+            String accountJson = objectMapper.writeValueAsString(account);
+            var body = RequestBody.create(accountJson, JSON);
+
+            var request = new Request.Builder()
+                    .patch(body)
+                    .url(accountApiUrl + "/")
+                    .build();
+            var call = okHttpClient.newCall(request);
+            var response = call.execute();
+
+            return this.getAccountFromHttpResponse(response, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+        try {
+            var request = new Request.Builder()
+                    .delete()
+                    .url(accountApiUrl + "/" + id)
+                    .build();
+            var call = okHttpClient.newCall(request);
+            var response = call.execute();
+
+            return response.code() == HttpStatus.OK.value();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Optional<AccountResponse> getAccountFromHttpResponse(Response response, HttpStatus expectedResponseCode)
+            throws IOException {
+        if (response.code() == expectedResponseCode.value()) {
+            AccountResponse accountResponse =
+                    objectMapper.readValue(Objects.requireNonNull(response.body()).string(), AccountResponse.class);
+            return Optional.ofNullable(accountResponse);
+        }
         return Optional.empty();
     }
 }

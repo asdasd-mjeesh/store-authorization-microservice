@@ -83,4 +83,31 @@ public class AccountControllerV1 {
         var accountsResponse = accountService.getByFilter(filter);
         return ResponseEntity.ok(accountsResponse);
     }
+
+    @GetMapping("/")
+    public ResponseEntity<?> getByEmail(@RequestParam(name = "email") String email) {
+        var accountResponse = accountService.getByEmail(email);
+        if (accountResponse.isPresent()) {
+            return ResponseEntity.ok(accountResponse.get());
+        }
+        return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<?> update(@RequestBody AccountRequest account) {
+        var accountResponse = accountService.update(account);
+        if (accountResponse.isPresent()) {
+            return ResponseEntity.ok(accountResponse.get());
+        }
+        return new ResponseEntity<>("Updating failed", HttpStatus.CONFLICT);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable(name = "id") Long id) {
+        boolean isDeleted = accountService.deleteById(id);
+        if (isDeleted) {
+            return ResponseEntity.ok("Deleted successfully");
+        }
+        return new ResponseEntity<>("Deleting was failed", HttpStatus.CONFLICT);
+    }
 }

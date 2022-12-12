@@ -11,11 +11,22 @@ import java.util.Optional;
 
 public interface AccountService {
     boolean confirm(Long accountId);
+
     Optional<AccountResponse> addPermissions(Long accountId, List<PermissionEnum> permissions);
+
     Optional<AccountResponse> deletePermissions(Long accountId, List<PermissionEnum> permissions);
+
     Optional<AccountResponse> changeRole(Long accountId, RoleName role);
+
     Optional<AccountResponse> create(AccountRequest account);
+
     Optional<AccountResponse> getById(Long id);
+
     List<AccountResponse> getByFilter(AccountFilter filter);
+
     Optional<AccountResponse> getByEmail(String email);
+
+    Optional<AccountResponse> update(AccountRequest account);
+
+    boolean deleteById(Long id);
 }

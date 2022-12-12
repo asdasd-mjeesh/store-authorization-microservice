@@ -2,6 +2,7 @@ package com.access_security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,11 @@ public class BeanFactory {
                 .readTimeout(responseTimeAwait, TimeUnit.SECONDS)
                 .writeTimeout(responseTimeAwait, TimeUnit.SECONDS)
                 .build();
+    }
+
+    @Bean
+    public MediaType jsonMediaType() {
+        return MediaType.get("application/json; charset=utf-8");
     }
 
     @Bean
