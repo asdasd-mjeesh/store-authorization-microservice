@@ -19,15 +19,15 @@ import java.util.*;
 @Slf4j
 public class AccountHttpCommunicationService implements AccountService {
     public final OkHttpClient okHttpClient;
-    public final MediaType JSON;
+    public final MediaType jsonMediaType;
     public final ObjectMapper objectMapper;
 
     @Value("${http.communication.account.api.url}")
     private String accountApiUrl;
 
-    public AccountHttpCommunicationService(OkHttpClient okHttpClient, MediaType json, ObjectMapper objectMapper) {
+    public AccountHttpCommunicationService(OkHttpClient okHttpClient, MediaType jsonMediaType, ObjectMapper objectMapper) {
         this.okHttpClient = okHttpClient;
-        this.JSON = json;
+        this.jsonMediaType = jsonMediaType;
         this.objectMapper = objectMapper;
     }
 
@@ -60,7 +60,7 @@ public class AccountHttpCommunicationService implements AccountService {
             String url = urlBuilder.build().toString();
 
             String permissionsJsonString = objectMapper.writeValueAsString(permissions);
-            var body = RequestBody.create(permissionsJsonString, JSON);
+            var body = RequestBody.create(permissionsJsonString, jsonMediaType);
             var request = new Request.Builder()
                     .patch(body)
                     .url(url)
@@ -82,7 +82,7 @@ public class AccountHttpCommunicationService implements AccountService {
             String url = urlBuilder.build().toString();
 
             String permissionsJsonString = objectMapper.writeValueAsString(permissions);
-            var body = RequestBody.create(permissionsJsonString, JSON);
+            var body = RequestBody.create(permissionsJsonString, jsonMediaType);
             var request = new Request.Builder()
                     .delete(body)
                     .url(url)
@@ -122,7 +122,7 @@ public class AccountHttpCommunicationService implements AccountService {
     public Optional<AccountResponse> create(AccountRequest account) {
         try {
             var accountJsonString = objectMapper.writeValueAsString(account);
-            var body = RequestBody.create(accountJsonString, JSON);
+            var body = RequestBody.create(accountJsonString, jsonMediaType);
             var request = new Request.Builder()
                     .post(body)
                     .url(accountApiUrl + "/")
@@ -161,7 +161,7 @@ public class AccountHttpCommunicationService implements AccountService {
     public List<AccountResponse> getByFilter(AccountFilter filter) {
         try {
             String filterJson = objectMapper.writeValueAsString(filter);
-            var body = RequestBody.create(filterJson, JSON);
+            var body = RequestBody.create(filterJson, jsonMediaType);
             var request = new Request.Builder()
                     .put(body)
                     .url(accountApiUrl + "/filter")
@@ -202,7 +202,7 @@ public class AccountHttpCommunicationService implements AccountService {
     public Optional<AccountResponse> update(AccountRequest account) {
         try {
             String accountJson = objectMapper.writeValueAsString(account);
-            var body = RequestBody.create(accountJson, JSON);
+            var body = RequestBody.create(accountJson, jsonMediaType);
 
             var request = new Request.Builder()
                     .patch(body)
