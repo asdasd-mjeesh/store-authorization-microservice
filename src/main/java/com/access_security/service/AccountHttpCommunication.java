@@ -12,23 +12,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
 
 @Service
 @Slf4j
-public class AccountHttpCommunicationService implements AccountService {
+public class AccountHttpCommunication implements AccountService {
     public final OkHttpClient okHttpClient;
     public final MediaType jsonMediaType;
     public final ObjectMapper objectMapper;
+    private final EntityResponseExposeService entityResponseExposeService;
 
     @Value("${http.communication.account.api.url.root}")
     private String accountsRootApiUrl;
 
-    public AccountHttpCommunicationService(OkHttpClient okHttpClient, MediaType jsonMediaType, ObjectMapper objectMapper) {
+    public AccountHttpCommunication(OkHttpClient okHttpClient,
+                                    MediaType jsonMediaType,
+                                    ObjectMapper objectMapper,
+                                    EntityResponseExposeService entityResponseExposeService) {
         this.okHttpClient = okHttpClient;
         this.jsonMediaType = jsonMediaType;
         this.objectMapper = objectMapper;
+        this.entityResponseExposeService = entityResponseExposeService;
     }
 
     @Override
@@ -68,7 +72,7 @@ public class AccountHttpCommunicationService implements AccountService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            return this.getAccountFromHttpResponse(response, HttpStatus.OK);
+            return entityResponseExposeService.getEntityFromHttpResponse(response, HttpStatus.OK, AccountResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -90,7 +94,7 @@ public class AccountHttpCommunicationService implements AccountService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            return this.getAccountFromHttpResponse(response, HttpStatus.OK);
+            return entityResponseExposeService.getEntityFromHttpResponse(response, HttpStatus.OK, AccountResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -112,7 +116,7 @@ public class AccountHttpCommunicationService implements AccountService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            return this.getAccountFromHttpResponse(response, HttpStatus.OK);
+            return entityResponseExposeService.getEntityFromHttpResponse(response, HttpStatus.OK, AccountResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -130,7 +134,7 @@ public class AccountHttpCommunicationService implements AccountService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            return this.getAccountFromHttpResponse(response, HttpStatus.CREATED);
+            return entityResponseExposeService.getEntityFromHttpResponse(response, HttpStatus.CREATED, AccountResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -146,12 +150,7 @@ public class AccountHttpCommunicationService implements AccountService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            if (response.code() == HttpStatus.OK.value()) {
-                AccountResponse accountResponse =
-                        objectMapper.readValue(Objects.requireNonNull(response.body()).string(), AccountResponse.class);
-                return Optional.ofNullable(accountResponse);
-            }
-            return Optional.empty();
+            return entityResponseExposeService.getEntityFromHttpResponse(response, HttpStatus.OK, AccountResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -169,10 +168,8 @@ public class AccountHttpCommunicationService implements AccountService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            if (response.code() == HttpStatus.OK.value()) {
-                return objectMapper.readValue(Objects.requireNonNull(response.body()).string(), List.class);
-            }
-            return new ArrayList<>();
+            return entityResponseExposeService
+                    .getEntityFromHttpResponse(response, HttpStatus.OK, List.class).orElse(new ArrayList());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -192,7 +189,7 @@ public class AccountHttpCommunicationService implements AccountService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            return this.getAccountFromHttpResponse(response, HttpStatus.OK);
+            return entityResponseExposeService.getEntityFromHttpResponse(response, HttpStatus.OK, AccountResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -211,7 +208,7 @@ public class AccountHttpCommunicationService implements AccountService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            return this.getAccountFromHttpResponse(response, HttpStatus.OK);
+            return entityResponseExposeService.getEntityFromHttpResponse(response, HttpStatus.OK, AccountResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -231,15 +228,5 @@ public class AccountHttpCommunicationService implements AccountService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Optional<AccountResponse> getAccountFromHttpResponse(Response response, HttpStatus expectedResponseCode)
-            throws IOException {
-        if (response.code() == expectedResponseCode.value()) {
-            AccountResponse accountResponse =
-                    objectMapper.readValue(Objects.requireNonNull(response.body()).string(), AccountResponse.class);
-            return Optional.ofNullable(accountResponse);
-        }
-        return Optional.empty();
     }
 }
