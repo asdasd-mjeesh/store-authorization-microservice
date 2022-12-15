@@ -9,24 +9,28 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class ProducerHttpCommunicationService implements ProducerService {
-    public final OkHttpClient okHttpClient;
-    public final MediaType jsonMediaType;
-    public final ObjectMapper objectMapper;
+public class ProducerHttpCommunication implements ProducerService {
+    private final OkHttpClient okHttpClient;
+    private final MediaType jsonMediaType;
+    private final ObjectMapper objectMapper;
+    private final EntityResponseExposeService entityResponseExposeService;
 
     @Value("${http.communication.producers.api.url.root}")
     private String producersRootApiUrl;
 
-    public ProducerHttpCommunicationService(OkHttpClient okHttpClient, MediaType jsonMediaType, ObjectMapper objectMapper) {
+    public ProducerHttpCommunication(OkHttpClient okHttpClient,
+                                     MediaType jsonMediaType,
+                                     ObjectMapper objectMapper,
+                                     EntityResponseExposeService entityResponseExposeService) {
         this.okHttpClient = okHttpClient;
         this.jsonMediaType = jsonMediaType;
         this.objectMapper = objectMapper;
+        this.entityResponseExposeService = entityResponseExposeService;
     }
 
     @Override
@@ -41,7 +45,7 @@ public class ProducerHttpCommunicationService implements ProducerService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            return this.getProducerFromHttpResponse(response, HttpStatus.CREATED);
+            return entityResponseExposeService.getEntityFromHttpResponse(response, HttpStatus.CREATED, ProducerResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -57,7 +61,7 @@ public class ProducerHttpCommunicationService implements ProducerService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            return this.getProducerFromHttpResponse(response, HttpStatus.OK);
+            return entityResponseExposeService.getEntityFromHttpResponse(response, HttpStatus.OK, ProducerResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -75,7 +79,8 @@ public class ProducerHttpCommunicationService implements ProducerService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            return objectMapper.readValue(Objects.requireNonNull(response.body()).string(), List.class);
+            return entityResponseExposeService
+                    .getEntityFromHttpResponse(response, HttpStatus.OK, List.class).orElse(new ArrayList());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -93,7 +98,7 @@ public class ProducerHttpCommunicationService implements ProducerService {
             var call = okHttpClient.newCall(request);
             var response = call.execute();
 
-            return this.getProducerFromHttpResponse(response, HttpStatus.OK);
+            return entityResponseExposeService.getEntityFromHttpResponse(response, HttpStatus.OK, ProducerResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -113,15 +118,5 @@ public class ProducerHttpCommunicationService implements ProducerService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Optional<ProducerResponse> getProducerFromHttpResponse(Response response, HttpStatus expectedResponseCode)
-            throws IOException {
-        if (response.code() == expectedResponseCode.value()) {
-            ProducerResponse producerResponse =
-                    objectMapper.readValue(Objects.requireNonNull(response.body()).string(), ProducerResponse.class);
-            return Optional.ofNullable(producerResponse);
-        }
-        return Optional.empty();
     }
 }
