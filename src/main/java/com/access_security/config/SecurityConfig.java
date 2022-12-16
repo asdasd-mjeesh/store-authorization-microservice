@@ -1,60 +1,58 @@
 package com.access_security.config;
 
-import com.access_security.security.CustomAuthenticationFilter;
-import com.access_security.security.CustomAuthorizationFilter;
-import lombok.RequiredArgsConstructor;
+import com.access_security.security.AuthenticationFilter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
-@Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
+    private final AuthenticationFilter authenticationFilter;
     private final UserDetailsService userDetailsService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public SecurityConfig(UserDetailsService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public SecurityConfig(AuthenticationFilter authenticationFilter, UserDetailsService userDetailsService, BCryptPasswordEncoder passwordEncoder) {
+        this.authenticationFilter = authenticationFilter;
         this.userDetailsService = userDetailsService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/api/login");
-        http.csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**").permitAll();
-        http.authorizeRequests().antMatchers("/api/v1/accounts/**").permitAll(); //"/api/v1/accounts/new**"
-        http.authorizeRequests().antMatchers("/api/v1/items/**").permitAll();
-        http.authorizeRequests().antMatchers("/api/v1/carts/**").permitAll();
-        http.authorizeRequests().antMatchers("/api/v1/producers/**").permitAll();
-        http.authorizeRequests().antMatchers("/api/v1/orders/**").permitAll();
-        http.authorizeRequests().antMatchers(POST, "/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
-        http.authorizeRequests().anyRequest().authenticated();
-        http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/**/auth/**").permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        return authenticationProvider;
     }
 }

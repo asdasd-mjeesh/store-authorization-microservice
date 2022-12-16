@@ -8,6 +8,8 @@ import com.access_security.model.response.account.AccountResponse;
 import com.access_security.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,6 +71,7 @@ public class AccountControllerV1 {
         return new ResponseEntity<>("creation error", HttpStatus.CONFLICT);
     }
 
+//    @PreAuthorize("hasAuthority('account:read')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable(name = "id") Long id) {
         var account = accountService.getById(id);
