@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -17,10 +18,11 @@ import java.util.*;
 @Service
 @Slf4j
 public class AccountHttpCommunication implements AccountService {
-    public final OkHttpClient okHttpClient;
-    public final MediaType jsonMediaType;
-    public final ObjectMapper objectMapper;
+    private final OkHttpClient okHttpClient;
+    private final MediaType jsonMediaType;
+    private final ObjectMapper objectMapper;
     private final EntityResponseExposeService entityResponseExposeService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Value("${http.communication.account.api.url.root}")
     private String accountsRootApiUrl;
@@ -28,11 +30,13 @@ public class AccountHttpCommunication implements AccountService {
     public AccountHttpCommunication(OkHttpClient okHttpClient,
                                     MediaType jsonMediaType,
                                     ObjectMapper objectMapper,
-                                    EntityResponseExposeService entityResponseExposeService) {
+                                    EntityResponseExposeService entityResponseExposeService,
+                                    BCryptPasswordEncoder passwordEncoder) {
         this.okHttpClient = okHttpClient;
         this.jsonMediaType = jsonMediaType;
         this.objectMapper = objectMapper;
         this.entityResponseExposeService = entityResponseExposeService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -125,6 +129,8 @@ public class AccountHttpCommunication implements AccountService {
     @Override
     public Optional<AccountResponse> create(AccountRequest account) {
         try {
+            String encodedPassword = passwordEncoder.encode(account.getPassword());
+            account.setPassword(encodedPassword);
             var accountJsonString = objectMapper.writeValueAsString(account);
             var body = RequestBody.create(accountJsonString, jsonMediaType);
             var request = new Request.Builder()

@@ -24,18 +24,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AccountResponse> maybeAccount = accountService.getByEmail(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<AccountResponse> maybeAccount = accountService.getByEmail(email);
         if(maybeAccount.isEmpty()) {
             log.error("User not found in the database");
             throw new UsernameNotFoundException("User not found in the database");
         } else {
             AccountResponse account = maybeAccount.get();
-            log.info("User found in the database: {}", username);
+            log.info("User found in the database: {}", email);
+
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            account.getRole().getPermissions().forEach(permission -> {
-                authorities.add(new SimpleGrantedAuthority(permission.getPermissionName()));
-            });
+            account.getRole().getPermissions().forEach(permission ->
+                    authorities.add(new SimpleGrantedAuthority(permission.getPermissionName())));
             return new User(account.getEmail(), account.getPassword(), authorities);
         }
     }
