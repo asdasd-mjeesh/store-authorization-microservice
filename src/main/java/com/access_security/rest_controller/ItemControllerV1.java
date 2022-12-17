@@ -6,6 +6,7 @@ import com.access_security.model.response.item.ItemResponse;
 import com.access_security.service.ItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ItemControllerV1 {
         this.itemService = itemService;
     }
 
+    @PreAuthorize("hasAuthority('item:save')")
     @PostMapping("/")
     public ResponseEntity<?> create(@RequestBody ItemRequest item) {
         var savedItem = itemService.createItem(item);
@@ -43,6 +45,7 @@ public class ItemControllerV1 {
         return ResponseEntity.ok(itemsResponse);
     }
 
+    @PreAuthorize("hasAuthority('item:save')")
     @PatchMapping("/")
     public ResponseEntity<?> update(@RequestBody ItemRequest item) {
         var updatedItem = itemService.update(item);
@@ -52,6 +55,7 @@ public class ItemControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('item:delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable(name = "id") Long id) {
         boolean isDeleted = itemService.deleteById(id);

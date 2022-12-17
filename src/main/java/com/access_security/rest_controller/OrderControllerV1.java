@@ -5,6 +5,7 @@ import com.access_security.model.request.filter.OrderFilter;
 import com.access_security.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class OrderControllerV1 {
         this.orderService = orderService;
     }
 
+    @PreAuthorize("hasAuthority('order:save')")
     @PostMapping("/")
     public ResponseEntity<?> createOrder(@RequestParam(name = "accountId") Long accountId) {
         var createdOrder = orderService.createOrder(accountId);
@@ -25,6 +27,7 @@ public class OrderControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('order:update')")
     @PatchMapping("/changeStatus")
     public ResponseEntity<?> changeStatus(@RequestParam(name = "orderId") Long orderId,
                                           @RequestParam(name = "status") OrderStatus status) {
@@ -35,6 +38,7 @@ public class OrderControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('order:read')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable(name = "id") Long id) {
         var orderResponse = orderService.getById(id);
@@ -44,6 +48,7 @@ public class OrderControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('order:read')")
     @PutMapping("/filter")
     public ResponseEntity<?> getByFilter(@RequestBody OrderFilter filter) {
         var ordersResponse = orderService.getByFilter(filter);

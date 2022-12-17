@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-public class BeanFactory {
+public class BeanFactoryConfig {
     @Value("${http.communication.await.time}")
     private final Long responseTimeAwait = 10L;
 

@@ -5,6 +5,7 @@ import com.access_security.model.request.producer.ProducerRequest;
 import com.access_security.service.ProducerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class ProducerControllerV1 {
         this.producerService = producerService;
     }
 
+    @PreAuthorize("hasAuthority('producer:save')")
     @PostMapping("/")
     public ResponseEntity<?> createProducer(@RequestBody ProducerRequest producer) {
         var savedProducer = producerService.create(producer);
@@ -40,6 +42,7 @@ public class ProducerControllerV1 {
         return ResponseEntity.ok(producersResponse);
     }
 
+    @PreAuthorize("hasAuthority('producer:save')")
     @PatchMapping("/")
     public ResponseEntity<?> update(@RequestBody ProducerRequest producer) {
         var updatedProducer = producerService.update(producer);
@@ -49,6 +52,7 @@ public class ProducerControllerV1 {
         return new ResponseEntity<>("Updating failed", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('producer:delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable(name = "id") Long id) {
         boolean isDeleted = producerService.deleteById(id);

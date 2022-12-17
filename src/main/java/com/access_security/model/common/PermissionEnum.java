@@ -4,6 +4,7 @@ public enum PermissionEnum {
     ACCOUNT_SAVE("account:save"),
     ACCOUNT_READ("account:read"),
     ACCOUNT_DELETE("account:delete"),
+    ACCOUNT_ACCESS_CHANGE("account_access:change"),
 
     ITEM_SAVE("item:save"),
     ITEM_READ("item:read"),
