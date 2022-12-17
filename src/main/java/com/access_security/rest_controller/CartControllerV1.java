@@ -4,6 +4,7 @@ import com.access_security.model.request.cart.BuyItemProperties;
 import com.access_security.service.CartService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,6 +16,7 @@ public class CartControllerV1 {
         this.cartService = cartService;
     }
 
+    @PreAuthorize("hasAuthority('cart:read')")
     @GetMapping("/{accountId}")
     public ResponseEntity<?> getByAccountId(@PathVariable(name = "accountId") Long accountId) {
         var cartResponse = cartService.getByAccountId(accountId);
@@ -24,6 +26,7 @@ public class CartControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('cart:edit')")
     @PostMapping("/addItem")
     public ResponseEntity<?> addItem(@RequestParam(name = "accountId") Long accountId,
                                      @RequestBody BuyItemProperties buyItemProperties) {
@@ -34,6 +37,7 @@ public class CartControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('cart:edit')")
     @PatchMapping("/editItem")
     public ResponseEntity<?> editItem(@RequestParam(name = "accountId") Long accountId,
                                       @RequestParam(name = "cartItemId") Long cartItemId,
@@ -45,6 +49,7 @@ public class CartControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('cart:edit')")
     @DeleteMapping("/deleteItem")
     public ResponseEntity<?> deleteItem(@RequestParam(name = "accountId") Long accountId,
                                         @RequestParam(name = "cartItemId") Long cartItemId) {
@@ -55,6 +60,7 @@ public class CartControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('cart:edit')")
     @DeleteMapping("/deleteAllItems")
     public ResponseEntity<?> deleteAllItems(@RequestParam(name = "accountId") Long accountId) {
         var updatedCart = cartService.deleteAllItems(accountId);

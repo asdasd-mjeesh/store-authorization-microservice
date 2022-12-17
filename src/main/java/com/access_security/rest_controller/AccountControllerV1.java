@@ -9,7 +9,6 @@ import com.access_security.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,6 +31,7 @@ public class AccountControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('account_access:change')")
     @PatchMapping("/addPermissions")
     public ResponseEntity<?> addPermissions(@RequestParam(name = "accountId") Long accountId,
                                             @RequestBody List<PermissionEnum> permissions) {
@@ -42,6 +42,7 @@ public class AccountControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('account_access:change')")
     @DeleteMapping("/deletePermissions")
     public ResponseEntity<?> deletePermissions(@RequestParam(name = "accountId") Long accountId,
                                                @RequestBody List<PermissionEnum> permissions) {
@@ -52,6 +53,7 @@ public class AccountControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('account_access:change')")
     @PatchMapping("/changeRole")
     public ResponseEntity<?> changeRole(@RequestParam(name = "accountId") Long accountId,
                                         @RequestParam(name = "roleName") RoleName role) {
@@ -71,7 +73,7 @@ public class AccountControllerV1 {
         return new ResponseEntity<>("creation error", HttpStatus.CONFLICT);
     }
 
-//    @PreAuthorize("hasAuthority('account:read')")
+    @PreAuthorize("hasAuthority('account:read')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable(name = "id") Long id) {
         var account = accountService.getById(id);
@@ -81,12 +83,14 @@ public class AccountControllerV1 {
         return new ResponseEntity<>(String.format("Account with id=%s not found", id), HttpStatus.NOT_FOUND);
     }
 
+    @PreAuthorize("hasAuthority('account:read')")
     @PutMapping("/filter")
     public ResponseEntity<List<AccountResponse>> getByFilter(@RequestBody AccountFilter filter) {
         var accountsResponse = accountService.getByFilter(filter);
         return ResponseEntity.ok(accountsResponse);
     }
 
+    @PreAuthorize("hasAuthority('account:read')")
     @GetMapping("/")
     public ResponseEntity<?> getByEmail(@RequestParam(name = "email") String email) {
         var accountResponse = accountService.getByEmail(email);
@@ -96,6 +100,7 @@ public class AccountControllerV1 {
         return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('account:read')")
     @PatchMapping("/")
     public ResponseEntity<?> update(@RequestBody AccountRequest account) {
         var updatedAccount = accountService.update(account);
@@ -105,6 +110,7 @@ public class AccountControllerV1 {
         return new ResponseEntity<>("Updating failed", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('account:delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable(name = "id") Long id) {
         boolean isDeleted = accountService.deleteById(id);
