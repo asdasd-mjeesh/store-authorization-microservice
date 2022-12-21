@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AccountService {
-    boolean confirm(Long accountId);
+    boolean confirm(String confirmationToken);
 
     Optional<AccountResponse> addPermissions(Long accountId, List<PermissionEnum> permissions);
 

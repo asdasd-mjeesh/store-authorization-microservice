@@ -40,10 +40,10 @@ public class AccountHttpCommunication implements AccountService {
     }
 
     @Override
-    public boolean confirm(Long accountId) {
+    public boolean confirm(String confirmationToken) {
         try {
             var urlBuilder = Objects.requireNonNull(HttpUrl.parse(accountsRootApiUrl + "/confirm")).newBuilder();
-            urlBuilder.addQueryParameter("accountId", String.valueOf(accountId));
+            urlBuilder.addQueryParameter("token", String.valueOf(confirmationToken));
             String url = urlBuilder.build().toString();
 
             var body = RequestBody.create(new byte[0]);

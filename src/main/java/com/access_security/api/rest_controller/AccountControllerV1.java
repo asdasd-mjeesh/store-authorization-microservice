@@ -1,5 +1,6 @@
-package com.access_security.rest_controller;
+package com.access_security.api.rest_controller;
 
+import com.access_security.exception.ExecuteActionException;
 import com.access_security.model.common.PermissionEnum;
 import com.access_security.model.common.RoleName;
 import com.access_security.model.request.account.AccountRequest;
@@ -23,12 +24,12 @@ public class AccountControllerV1 {
     }
 
     @PatchMapping("/confirm")
-    public ResponseEntity<String> confirmAccount(@RequestParam(name = "accountId") Long accountId) {
-        boolean isConfirmed = accountService.confirm(accountId);
+    public ResponseEntity<String> confirmAccount(@RequestParam(name = "token") String confirmationToken) {
+        boolean isConfirmed = accountService.confirm(confirmationToken);
         if (isConfirmed) {
             return ResponseEntity.ok("Confirmation send");
         }
-        return new ResponseEntity<>("Error", HttpStatus.CONFLICT);
+        throw new ExecuteActionException(String.format("Account confirmation with token=%s was failed", confirmationToken), HttpStatus.CONFLICT);
     }
 
     @PreAuthorize("hasAuthority('account_access:change')")

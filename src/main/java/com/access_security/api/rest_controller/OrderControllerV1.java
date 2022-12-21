@@ -1,4 +1,4 @@
-package com.access_security.rest_controller;
+package com.access_security.api.rest_controller;
 
 import com.access_security.model.common.OrderStatus;
 import com.access_security.model.request.filter.OrderFilter;
